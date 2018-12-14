@@ -6,15 +6,16 @@ import pandas as pd
 ################################
 
 # Reading the CSV that contains inspection data
+census = pd.read_csv('./data/dados_operacoes.csv', sep=';')
 
 # Reading the RDS that contains census data
-import rpy2.robjects as robjects
-from rpy2.robjects import pandas2ri
-pandas2ri.activate()
+# import rpy2.robjects as robjects
+# from rpy2.robjects import pandas2ri
+# pandas2ri.activate()
 
-readRDS = robjects.r['readRDS']
-df = readRDS('my_file.rds')
-df = pandas2ri.ri2py(df)
+# readRDS = robjects.r['readRDS']
+# df = readRDS('my_file.rds')
+# df = pandas2ri.ri2py(df)
 # do something with the dataframe
 
 ############################

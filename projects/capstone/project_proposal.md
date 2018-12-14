@@ -46,18 +46,8 @@ First, we'll estabilish three menace rating (LOW, MEDIUM, HIGH), using the regis
 - MEDIUM : interquartile interval and
 - HIGH : last quartile.
 
-After that, we'll label the municipalities that actually had inspections according to these ratings and the average of the rescues per inspection in them. This rating will be added to the census data and an algorithm will be run to reduce the dimensionality, based on the information gain.
+After that, we'll label the municipalities that actually had inspections according to these ratings and the average of the rescues per inspection in them. This rating will be added to the census data as the label for the classification later on.
 
-With the dimensionality reduced, we'll run a classification algotrithm to build the model for future prediction (on municipalities that have no inspection record).
+The census data holds a high dimensionality. In order to keep the explainability of the resulting model, we'll use random forests to understand how the dimensions in census data contribute to the model. On the first run, we expect to identify features that contribute little (or not at all) to the outcome - we expect to keep at least 95% of explainability and a minimum of 10 features). Then, with the dimensionality reduced, we'll train and test again the model, checking the impact of the change.
 
-Finally, the model will be applied for labeling municipalities with no inspection record. From that result, the locations with a rating of HIGH would join the previous HIGH labeled ones as flagged.
-
------------
-
-**Before submitting your proposal, ask yourself. . .**
-
-- Does the proposal you have written follow a well-organized structure similar to that of the project template?
-- Is each section (particularly **Solution Statement** and **Project Design**) written in a clear, concise and specific fashion? Are there any ambiguous terms or phrases that need clarification?
-- Would the intended audience of your project be able to understand your proposal?
-- Have you properly proofread your proposal to assure there are minimal grammatical and spelling mistakes?
-- Are all the resources used for this project correctly cited and referenced?
+After the final model is built, it will be applied for labeling municipalities with no inspection record. Those with a label HIGH will be flagged, as the ones already identified in the inspections records. The final output is a brazilian map of municipalities colored by rating level, revealing which areas should be subject to a more thogough investigation.
