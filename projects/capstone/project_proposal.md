@@ -29,7 +29,7 @@ One solution to the problem can be resource optimization by defining high priori
 
 ### Benchmark Model
 
-The benchmark model is the actual rating of rescues per inspection exclusively using the traditional resource placing strategies. 
+There's no benchmark model available but the actual rating of rescues per inspection exclusively using the traditional resource placing strategies. Therefore, we'll split the data in two equal parts: a subset for training and validating, that will be used as the benchmark model, and another to test the model.
 
 ### Evaluation Metrics
 
@@ -41,13 +41,9 @@ For the purpose of the current study, we'll use the inspections dataset to train
 
 ### Project Design
 
-First, we'll estabilish three menace rating (LOW, MEDIUM, HIGH), using the register of previous inspections using the distribution of rescues per inspection. The levels will be:
+First, we'll estabilish three menace rating (LOW, MEDIUM, HIGH), using the register of previous inspections using the distribution of rescues per inspection. The levels will be, LOW, MEDIUM and HIGH, from the terciles of the selected indicator.
 
-- LOW : the first quartile;
-- MEDIUM : interquartile interval and
-- HIGH : last quartile.
-
-Since there's no previous definition of such rating and we're establishing the levels according to a normal distribution, the labeling class should be balanced. After that, we'll label the municipalities that actually had inspections according to these ratings and the average of the rescues per inspection in them. This rating will be added to the census data as the label for the classification later on.
+Since there's no previous definition of such rating and we're establishing the levels according to a normal distribution, the labeling class should be balanced (each tercile holds a third of the data). After that, we'll label the municipalities that actually had inspections according to these ratings and the average of the rescues per inspection in them. This rating will be added to the census data as the label for the classification later on.
 
 The census data holds a high dimensionality. In order to keep the explainability of the resulting model, we'll use random forests to understand how the dimensions in census data contribute to the model. Beforehand, all municipalities will be disidentificated for the purpose of this study.
 
