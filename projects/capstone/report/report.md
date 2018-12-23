@@ -10,6 +10,10 @@
     .dataframe thead tr th {
         text-align: left;
     }
+
+    .dataframe {
+      font-size: 8px;
+    }
 </style>
 # Machine Learning Engineer Nanodegree
 
@@ -1750,11 +1754,7 @@ plt.show()
 
 
 
-![png](output_24_1.png)
-
-
-
-![png](output_24_2.png)
+![png](output_24_1.png) ![png](output_24_2.png)
 
 
 ### Validating the model
@@ -1780,11 +1780,7 @@ plt.show()
 
 
 
-![png](output_26_1.png)
-
-
-
-![png](output_26_2.png)
+![png](output_26_1.png) ![png](output_26_2.png)
 
 
 ### Testing the model
@@ -1810,11 +1806,7 @@ plt.show()
 
 
 
-![png](output_28_1.png)
-
-
-
-![png](output_28_2.png)
+![png](output_28_1.png) ![png](output_28_2.png)
 
 
 ## Conclusion
