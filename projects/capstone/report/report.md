@@ -454,8 +454,8 @@ df.head()
 <p>5 rows × 1518 columns</p>
 </div>
 
-### Exploratory Visualization
-# TODO #
+<!-- ### Exploratory Visualization
+# TODO # -->
 
 ### Algorithms and Techniques
 
@@ -1748,7 +1748,7 @@ print(y_test.shape)
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_predict
 
-classifier = RandomForestClassifier(n_estimators=10, max_depth=10, random_state=rs)
+classifier = RandomForestClassifier(n_estimators=5, max_depth=5, random_state=rs)
 learner = classifier.fit(X_train, y_train.values.ravel())
 predictions_train = cross_val_predict(learner, X_train, y_train.values.ravel(), cv=10)
 
@@ -1768,9 +1768,9 @@ skplt.metrics.plot_confusion_matrix(y_train, predictions_train, normalize=True)
 plt.show()
 ```
 
-    Accuracy: 0.7833333333333333
-    F Score (each label): [0.78833693 0.83333333 0.73608618]
-    F Score: 0.7833333333333333
+    Accuracy: 0.8466666666666667
+    F Score (each label): [0.84886128 0.91435185 0.79487179]
+    F Score: 0.8466666666666667
 
 
 
@@ -1794,10 +1794,9 @@ skplt.metrics.plot_confusion_matrix(y_validate, predictions_validate, normalize=
 plt.show()
 ```
 
-    Accuracy: 0.7631578947368421
-    F Score (each label): [0.7751938  0.76612903 0.7480315 ]
-    F Score: 0.7631578947368421
-
+    Accuracy: 0.75
+    F Score (each label): [0.76642336 0.81896552 0.66929134]
+    F Score: 0.75
 
 
 ![png](output_26_1.png) ![png](output_26_2.png)
@@ -1820,31 +1819,88 @@ skplt.metrics.plot_confusion_matrix(y_test, predictions_test, normalize=True)
 plt.show()
 ```
 
-    Accuracy: 0.8169761273209549
-    F Score (each label): [0.85149864 0.83710407 0.73770492]
-    F Score: 0.8169761273209549
-
+    Accuracy: 0.830238726790451
+    F Score (each label): [0.86253369 0.86677368 0.74038462]
+    F Score: 0.830238726790451
 
 
 ![png](output_28_1.png) ![png](output_28_2.png)
 
+### Refinement
+
+Starting from the parameters n\_estimators = 10 and max\_depth = 10, we started tuning them to acheieve better metrics. The best numbers were found with both parameters in 5.
+
+#### Starting metrics for first hyperparameters setup
+n_estimators = 10
+max_depth = 10
+Accuracy: 0.7833333333333333
+F Score (each label): [0.78833693 0.83333333 0.73608618]
+F Score: 0.7833333333333333
+
+#### Best configuration
+n_estimators = 5
+max_depth = 5
+Accuracy: 0.8466666666666667
+F Score (each label): [0.84886128 0.91435185 0.79487179]
+F Score: 0.8466666666666667
+
+Although the increase was not observed in the smaller validation subset, it resurfaced in the validation:
+
+#### Validation - Starting metrics for first hyperparameters setup
+n_estimators = 10
+max_depth = 10
+Accuracy: 0.7631578947368421
+F Score (each label): [0.7751938  0.76612903 0.7480315 ]
+F Score: 0.7631578947368421
+
+#### Validation - Best configuration
+n_estimators = 5
+max_depth = 5
+Accuracy: 0.75
+F Score (each label): [0.76642336 0.81896552 0.66929134]
+F Score: 0.75
+
+#### Test - Starting metrics for first hyperparameters setup
+n_estimators = 10
+max_depth = 10
+Accuracy: 0.8169761273209549
+F Score (each label): [0.85149864 0.83710407 0.73770492]
+F Score: 0.8169761273209549
+
+#### Test - Best configuration
+n_estimators = 5
+max_depth = 5
+Accuracy: 0.830238726790451
+F Score (each label): [0.86253369 0.86677368 0.74038462]
+F Score: 0.830238726790451
 
 ## IV. Results
 
 ### Model Evaluation and Validation
-# TODO #
+
+With hyperparameters adjusted over the cross-validated random forest, the results are reliable and robust, therefore it can be put to use in flagging municipalities for maximizing rescues per inspection. Splitting the dataset in different sizes allow us to observe that different data may result in little variation on accuracy and f-score, but the model is still reliable even with such perturbation.
 
 ### Justification
 
 As expected, the larger the balanced subset, the more accurate the cross-validated prediction. The testing subset, that held 50% of the data had the best metrics overall (except for the MEDIUM label).
 
-In the proposed real-world scenario, though, the accuracy can only be assessed by addressing resources to the flagged municipalities (labeled HIGH according to an expectation of maximizing rescues per inspection). It's very promising, nonetheless, to run such experimentations: in the normalized confusion matrix, for instance, we can see that 0.01 (2 occurences) of real HIGH were misclassified as LOW and 0.05 (7 instances) as MEDIUM, while 0.93 (125 municipalities) were correctly classified.
+In the proposed real-world scenario, though, the accuracy can only be assessed by addressing resources to the flagged municipalities (labeled HIGH according to an expectation of maximizing rescues per inspection). It's very promising, nonetheless, to run such experimentations: in the normalized confusion matrix, for instance, we can see that no occurences of real HIGH were misclassified as LOW and 0.04 (6 instances) as MEDIUM, while 0.96 (128 municipalities) were correctly classified.
 
 ## V. Conclusion
 
 ### Free-Form Visualization
 
-If law enforcement should address the 150 municipalities classified as HIGH, we should expect the same 125 places (~83.33%) to be correctly classified, therefore generating more rescues per inspection. 5 of them (~3.33%) would represent a low rate of success, since the municipalities labeled as LOW are near-zero rescues per inspections, from the distribution used for labeling (from 0 to ~0.045). Similarly, we'd have 20 inspections (~13.33% of the 150 labeled as HIGH) with fewer rescues (from ~0.045 to ~0.139) according to the ratings and the confusion matrix. 
+Resource allocation for maximizing the number rescues from modern slavery per inspections can be achieved by changing from the denounce-based traditional approach to a evidence-based classification of municipalities, tackling the problem by using statistical analysis to increase the probability of more effective diligences. One way to do that is classifying municipalities by their profile, along with historical rescues data - informations already available to goverment agencies.
+
+The resulting model is accurate, robust and reliable. If used in an iterative way, with feedback loops, the model will be constantly adapted to the trends in modern slavery.
+
+### Reflection
+
+The data from the census were explored and, due to sparsity, discarded in favor of using only indicators generated by the rescues. The high dimensionality were reduced first by observing business rules (like absence of higher granularity data - ds\_agregacao\_secundaria) and collections of features too granular, that rendered the dataset too sparse. We ended up with 51 features. One of them, the rescues per inspection indicator, were transformed in a categorical field, labeling the instance as HIGH, MEDIUM or LOW rescues per inspection, using the terciles of the distribution of the original feature.
+
+The resulting dataset was subject to a cross-validated Random Forests - ensemble algorithm for classification. Its hyperparameters tuned for increasing accuracy and f-score metrics in the training subset. The result was over 83% accuracy in the testing subset, with a similar f-score.
+
+If law enforcement should address the 150 municipalities classified as HIGH, we should expect the same 128 places (~85.33%) to be correctly classified, therefore generating more rescues per inspection. 4 of them (~2.67%) would represent a low rate of success, since the municipalities labeled as LOW are near-zero rescues per inspections, from the distribution used for labeling (from 0 to ~0.045). Similarly, we'd have 20 inspections (~13.33% of the 150 labeled as HIGH) with fewer rescues (from ~0.045 to ~0.139) according to the ratings and the confusion matrix. 
 
 We can also verify the actual feature importance for the accurate predictions, witch may enable us to avoid rhetorical disputes and focus on tackling the problem at hand.
 
@@ -1880,9 +1936,6 @@ plt.show()
 
 
 Since the dataset used is closely related to inspections and rescues, it tends to a reinforced bias (the number of rescues - te_rgt -, for instance, is obviously extremely relevant to the classification. Some relevant features can bee seen, such as the ammount Male slaves rescued (te_res_sexo - Masculino), the low instruction level (te_res_instrucao and te_nat_instrucao - 5th and 6th to 9th year of formal education). Some issues show up also, such as the race not informed in the reports (te_nat_raca and te_res_raca) being among the most relevant features.
-
-### Reflection
-# TODO #
 
 ### Improvement
 
