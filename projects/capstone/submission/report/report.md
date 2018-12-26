@@ -479,6 +479,8 @@ In the Random Forests technique, after the individual predictions made by its De
 
 There's no benchmark model available but the actual rating of rescues per inspection exclusively using the traditional resource placing strategies. Therefore, we'll split the data in two equal parts: a subset for training and validating, that will be used as the benchmark model, and another to test the model.
 
+The data will be subject to a naive bayes classification for performance comparison.
+
 ## III. Methodology
 
 ### Data Preprocessing
@@ -1885,6 +1887,41 @@ With hyperparameters adjusted over the cross-validated random forest, the result
 As expected, the larger the balanced subset, the more accurate the cross-validated prediction. The testing subset, that held 50% of the data had the best metrics overall (except for the MEDIUM label).
 
 In the proposed real-world scenario, though, the accuracy can only be assessed by addressing resources to the flagged municipalities (labeled HIGH according to an expectation of maximizing rescues per inspection). It's very promising, nonetheless, to run such experimentations: in the normalized confusion matrix, for instance, we can see that no occurences of real HIGH were misclassified as LOW and 0.04 (6 instances) as MEDIUM, while 0.96 (128 municipalities) were correctly classified.
+
+In comparison to a Naive Bayes classification as benchmark, the random forests revealed an increased accuracy and f-score, as can be seen in the following metrics:
+
+#### NB for training set
+
+```
+Number of mislabeled points out of a total 300 points : 147
+Accuracy: 0.51 (-0.33 comparing to the Random Forests)
+F Score (each label): [0.73170732 0.52816901 0.29085873]
+F Score: 0.51 (-0.33 comparing to the Random Forests)
+```
+
+![png](output_24_3.png)
+
+#### NB for validation set
+
+```
+Number of mislabeled points out of a total 76 points : 33
+Accuracy: 0.5657894736842105 (-0.19 comparing to the Random Forests)
+F Score (each label): [0.71428571 0.59659091 0.35353535]
+F Score: 0.5657894736842105 (-0.19 comparing to the Random Forests)
+```
+
+![png](output_26_3.png)
+
+#### NB for testing set
+
+```
+Number of mislabeled points out of a total 377 points : 184
+Accuracy: 0.5119363395225465 (-0.32 comparing to the Random Forests)
+F Score (each label): [0.651341   0.55778894 0.19021739]
+F Score: 0.5119363395225465 (-0.32 comparing to the Random Forests)
+```
+
+![png](output_28_3.png)
 
 ## V. Conclusion
 

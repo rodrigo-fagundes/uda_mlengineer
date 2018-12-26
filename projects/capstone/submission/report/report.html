@@ -454,6 +454,7 @@ df.head()
 <p>In the Random Forests technique, after the individual predictions made by its Decision Tree take place, the method returns the class that is the mode of the classes outputs of those individual trees. In other words, each Decision Tree &quot;votes&quot; for a label, according to the rules they found, and then the votes are computed by the Forests, resulting in a label decided by the majority (using mode). By doing that, it avoids the overfitting tendency in individual Decision Tree.</p>
 <h3 id="benchmark">Benchmark</h3>
 <p>There's no benchmark model available but the actual rating of rescues per inspection exclusively using the traditional resource placing strategies. Therefore, we'll split the data in two equal parts: a subset for training and validating, that will be used as the benchmark model, and another to test the model.</p>
+<p>The data will be subject to a naive bayes classification for performance comparison.</p>
 <h2 id="iii-methodology">III. Methodology</h2>
 <h3 id="data-preprocessing">Data Preprocessing</h3>
 <p>First of all, municipalities with no rescue will be removed from the dataset. As proposed, only those with actual rescue will be subject of the current study.</p>
@@ -1410,7 +1411,7 @@ min        0.250000
 max      836.500000
 Name: default, dtype: float64
 </code></pre>
-<p><img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/report/output_18_2.png" alt="png"></p>
+<p><img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/submission/report/output_18_2.png" alt="png"></p>
 <p>As the distribution shows, there's a concentration of rescues per inspection near the origin. It could mean few occurences of modern slavery, if there weren't municipalities that presented much higher rates - leading to a long tail in the distribution. Perfecting resources placement could lower inspections with near-zero rescues and bring the distribution to a normal display. At the same time, incresing effectiveness in enforcement may reduce the cases with the highest rates.</p>
 <pre class="hljs"><code><div><span class="hljs-comment"># Categorization of the label feature</span>
 df_with_labels = df_final
@@ -1670,7 +1671,7 @@ plt.show()
 F Score (each label): [0.84886128 0.91435185 0.79487179]
 F Score: 0.8466666666666667
 </code></pre>
-<p><img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/report/output_24_1.png" alt="png"> <img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/report/output_24_2.png" alt="png"></p>
+<p><img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/submission/report/output_24_1.png" alt="png"> <img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/submission/report/output_24_2.png" alt="png"></p>
 <h4 id="validating-the-model">Validating the model</h4>
 <pre class="hljs"><code><div>predictions_validate = cross_val_predict(learner, X_validate, y_validate.values.ravel(), cv=<span class="hljs-number">10</span>)
 
@@ -1688,7 +1689,7 @@ plt.show()
 F Score (each label): [0.76642336 0.81896552 0.66929134]
 F Score: 0.75
 </code></pre>
-<p><img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/report/output_26_1.png" alt="png"> <img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/report/output_26_2.png" alt="png"></p>
+<p><img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/submission/report/output_26_1.png" alt="png"> <img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/submission/report/output_26_2.png" alt="png"></p>
 <h4 id="testing-the-model">Testing the model</h4>
 <pre class="hljs"><code><div>predictions_test = cross_val_predict(learner, X_test, y_test.values.ravel(), cv=<span class="hljs-number">10</span>)
 
@@ -1706,7 +1707,7 @@ plt.show()
 F Score (each label): [0.86253369 0.86677368 0.74038462]
 F Score: 0.830238726790451
 </code></pre>
-<p><img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/report/output_28_1.png" alt="png"> <img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/report/output_28_2.png" alt="png"></p>
+<p><img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/submission/report/output_28_1.png" alt="png"> <img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/submission/report/output_28_2.png" alt="png"></p>
 <h3 id="refinement">Refinement</h3>
 <p>Starting from the parameters n_estimators = 10 and max_depth = 10, we started tuning them to acheieve better metrics. The best numbers were found with both parameters in 5.</p>
 <h4 id="starting-metrics-for-first-hyperparameters-setup">Starting metrics for first hyperparameters setup</h4>
@@ -1752,6 +1753,28 @@ F Score: 0.830238726790451</p>
 <h3 id="justification">Justification</h3>
 <p>As expected, the larger the balanced subset, the more accurate the cross-validated prediction. The testing subset, that held 50% of the data had the best metrics overall (except for the MEDIUM label).</p>
 <p>In the proposed real-world scenario, though, the accuracy can only be assessed by addressing resources to the flagged municipalities (labeled HIGH according to an expectation of maximizing rescues per inspection). It's very promising, nonetheless, to run such experimentations: in the normalized confusion matrix, for instance, we can see that no occurences of real HIGH were misclassified as LOW and 0.04 (6 instances) as MEDIUM, while 0.96 (128 municipalities) were correctly classified.</p>
+<p>In comparison to a Naive Bayes classification as benchmark, the random forests revealed an increased accuracy and f-score, as can be seen in the following metrics:</p>
+<h4 id="nb-for-training-set">NB for training set</h4>
+<pre><code>Number of mislabeled points out of a total 300 points : 147
+Accuracy: 0.51 (-0.33 comparing to the Random Forests)
+F Score (each label): [0.73170732 0.52816901 0.29085873]
+F Score: 0.51 (-0.33 comparing to the Random Forests)
+</code></pre>
+<p><img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/submission/report/output_24_3.png" alt="png"></p>
+<h4 id="nb-for-validation-set">NB for validation set</h4>
+<pre><code>Number of mislabeled points out of a total 76 points : 33
+Accuracy: 0.5657894736842105 (-0.19 comparing to the Random Forests)
+F Score (each label): [0.71428571 0.59659091 0.35353535]
+F Score: 0.5657894736842105 (-0.19 comparing to the Random Forests)
+</code></pre>
+<p><img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/submission/report/output_26_3.png" alt="png"></p>
+<h4 id="nb-for-testing-set">NB for testing set</h4>
+<pre><code>Number of mislabeled points out of a total 377 points : 184
+Accuracy: 0.5119363395225465 (-0.32 comparing to the Random Forests)
+F Score (each label): [0.651341   0.55778894 0.19021739]
+F Score: 0.5119363395225465 (-0.32 comparing to the Random Forests)
+</code></pre>
+<p><img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/submission/report/output_28_3.png" alt="png"></p>
 <h2 id="v-conclusion">V. Conclusion</h2>
 <h3 id="free-form-visualization">Free-Form Visualization</h3>
 <p>Resource allocation for maximizing the number rescues from modern slavery per inspections can be achieved by changing from the denounce-based traditional approach to a evidence-based classification of municipalities, tackling the problem by using statistical analysis to increase the probability of more effective diligences. One way to do that is classifying municipalities by their profile, along with historical rescues data - informations already available to goverment agencies.</p>
@@ -1786,7 +1809,7 @@ plt.legend(loc = <span class="hljs-string">'upper center'</span>)
 plt.tight_layout()
 plt.show()
 </div></code></pre>
-<p><img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/report/output_30_0.png" alt="png"></p>
+<p><img src="file:///Users/rmfagundes/Documents/Projetos/Estudos/udacity/mlengineer/uda_mlengineer/projects/capstone/submission/report/output_30_0.png" alt="png"></p>
 <p>Since the dataset used is closely related to inspections and rescues, it tends to a reinforced bias (the number of rescues - te_rgt -, for instance, is obviously extremely relevant to the classification. Some relevant features can bee seen, such as the ammount Male slaves rescued (te_res_sexo - Masculino), the low instruction level (te_res_instrucao and te_nat_instrucao - 5th and 6th to 9th year of formal education). Some issues show up also, such as the race not informed in the reports (te_nat_raca and te_res_raca) being among the most relevant features.</p>
 <h3 id="improvement">Improvement</h3>
 <p>Since the results of this study is expected to be included in the Observatório Digital do Trabalho Escravo, the model will be built using the full inspections dataset. Then, it will be applied for labeling municipalities with no inspection record. In order for that to work, we must revisit the raw datasets from IBGE and the check if the high sparsity persists and, if so, how to address this issue.</p>
