@@ -21,7 +21,9 @@
 Rodrigo Moreira Fagundes
 December 23rd, 2018
 
-## Introduction
+## I. Definition
+
+### Project Overview
 
 In such a large developing country as Brazil, with so many different economic and cultural setups, tackling modern slavery efficiently is a huge challenge. According the Observatório Digital do Trabalho Escravo (https://observatorioescravo.mpt.mp.br/), from 2003 to 2018, 44,229 people were rescued from degrading working conditions in 3,318 inspections (13.33 rescues per inspaction). 2,006 successful diligences took place in 766 of the 5,570 brazilian municipalities (a coverage of 13.75%). If we add the 1,847 inspections with no rescues, the coverage raises to a 37.9%, with 2,112 locations, but it reveals a success rate of 52.06%. Since 2015, the number of diligences have benn falling, returning to the yearly inspections frequency seen in 2003-2007.
 
@@ -33,25 +35,29 @@ In opposition, urban centers with high population density have a large number of
 
 Given the scenarios, government agencies have to craft a way to concentrate its resources in targets that reach more vulnerable people. One way to create such a prioritization can be trying to identify, using classification, the locations that would most likely to result in more rescues per diligence. Some inputs are very promising for that task, such as municipalities profiles - based on census data provided by IBGE (Instituto Nacional de Geografia e Estatística) - and the record of previous inspections - from MTE (Ministério do Trabalho e Emprego). The output of the classification will indicate municipalities in which inspections may result in maximum rescue rates.
 
-### Datasets and Inputs
+One solution to the problem can be resource optimization by defining high priorities munuicipalities based on statistical inference. By using municipalities similarities and previous diligences data, it's reasonable to focus on locations that are most likely to result in a more effective action, rescuing more people in a single inspection, for instance. By prioritizing municipalities according to the distribution of rescues per inspection, the model can be repeated, hopefully with decreasing numbers of perpetrations.
+
+### Metrics
+
+To measure the success of the solution, the municipalities that have no previous records flagged by the solution should be split in control and test subjects. The testing group should be subject to a task force and the result should be compared to the control (disclosed at the end of the evaluation, to avoid bias). A number of false positives should be expected, and compared to the metrics revealed in the modeling phase.
+
+If the rescues per inspections in the testing group is higher than the control group (error margin considered), the model is proven effective. The result should also be compared to the overall rating and to the previous records - it can reveal a migration of modern slavery practices.
+
+For the purpose of the current study, we'll use the inspections dataset to train, test and validate the model, comparing the results using precision and recall metrics.
+
+## II. Analysis
+
+### Data Exploration
 
 For this study, we're using three datasets. The first is a collection of information on municipality's census, collected by IBGE (Instituto Nacional de Geografia e Estatística), available to the public. The comprehensive dataset, with no relevant missing data so far, is a suitable source for identifying profiles and similarities between locations. Is is also a reliable dataset, once the census conducted by IBGE goes through a rigorous methodology.
 
 The second and third datasets will be the disidentificated registers of operations and inspections. They contain information on the municipalities where inspections took place, how many people were rescued from degrading work conditions, their origin and where they claimed to reside at the moment. In the current study, they'll be used as a base for risk rating, which in turn will become the label for classification.
 
-### Solution Statement
-
-One solution to the problem can be resource optimization by defining high priorities munuicipalities based on statistical inference. By using municipalities similarities and previous diligences data, it's reasonable to focus on locations that are most likely to result in a more effective action, rescuing more people in a single inspection, for instance. By prioritizing municipalities according to the distribution of rescues per inspection, the model can be repeated, hopefully with decreasing numbers of perpetrations.
-
-## Exploring the datasets
-
-### Census
+#### Census
 
 The census data, collected by IBGE (https://www.ibge.gov.br/) was provided by Smartlab (http://smartlab.mpt.mp.br) in December 22nd, 2018 as a CSV file. The dataset is the same used in the Observatório Digital do Trabalho Escravo (http://observatorioescravo.mpt.mp.br). It contains 73 indicators, including GDP, employed population by age, among others. We took the more comprehensive data, from 2010.
 
 In order to remove municipalities' identification, we appended the average of rescues per inspections from the rescues data to the census dataset. The input was generated by MTE (http://mte.gov.br) and provided by Smartlab. It is also used in the Observatório Digital do Trabalho Escravo.
-
-
 
 ```python
 import pandas as pd
@@ -72,10 +78,6 @@ df.head()
 ```
 
     (5565, 113)
-
-
-
-
 
 <div>
 <table border="1" class="dataframe">
@@ -231,10 +233,7 @@ df.head()
 <p>5 rows × 113 columns</p>
 </div>
 
-
-
 The census data provided don't seem to be as thorough as expected. It should be revisited in the future studies, should the density proves too low to provide a strong profile for the municipality.
-
 
 ```python
 # Checking sparsity/density
@@ -247,7 +246,7 @@ print(sdf.density)
 
 Since the dataset revealed itself too sparse, we'll conduct the study using just the rescues dataset. It contains a high dimensionality (higher than the census), because of the depth and granularity of some dimensions.
 
-### Rescue data
+#### Rescues data
 
 The inspection data was colected from the Observatório Digital do Trabalho Escravo (http://observatorioescravo.mpt.mp.br) in December 22nd, 2018 as a CSV file. It contains register from rescues with high dimensionality, since the indicators were built taking into account the munber of responses of each rescuee survey and includes info on gender, race, instruction, age, occupation (current and desired), among others.
 
@@ -260,7 +259,6 @@ All data are numeric indicatiors, with the ammount of people. They can be divide
 Another important variable is _ds_agregacao_primaria_, which is a second level of granularity, an specialization of the indicator.
 
 __For example:__ _te_res_raca_ with ds_agregacao_primaria 'Branca' in the municipality 0000000 is an indicator that counts the number of white people that resided in the city 0000000, regardless of where they were rescued.
-
 
 ```python
 # Reading the CSV
@@ -456,9 +454,34 @@ df.head()
 <p>5 rows × 1518 columns</p>
 </div>
 
+### Exploratory Visualization
+# TODO #
 
+### Algorithms and Techniques
 
-## Data Preparation
+The census data holds a high dimensionality. In order to keep the explainability of the resulting model, we'll use random forests to understand how the dimensions in census data contribute to the model. Beforehand, all municipalities will be disidentificated for the purpose of this study.
+
+We'll estabilish three menace rating (LOW, MEDIUM, HIGH), using the register of previous inspections using the distribution of rescues per inspection. The levels will be, LOW, MEDIUM and HIGH, from the terciles of the selected indicator.
+
+Since there's no previous definition of such rating and we're establishing the levels according to a normal distribution, the labeling class should be balanced (each tercile holds a third of the data). After that, we'll label the municipalities that actually had inspections according to these ratings and the average of the rescues per inspection in them. This rating will be added to the census data as the label for the classification later on.
+
+With the dimensionality reduced and labels set, we'll revisit the sliced dataset, remove the extreme outliers (above Q1 - 3*IQ, where Q1 is the first quartile and IQ is the interquartile) and normalize the data. Then we'll apply Random Forests for classification. 
+
+The classification algorithm was chosen because, as an ensemble method, it combines machine learning techniques, reducing biases, improving generalization and decreasing variance. Additionally, random forests are robust to outliers. For the current problem, with a small dataset and features already reduced, its weaknesses, such as high complexity and high time and resource consumption, have low impact.
+
+Random Forests consist of training a series of Decision Trees, each using a subset of the data (bagging method) and using them to predict.
+
+A Decision Tree is a method that consists in a succession of splitting in a dataset according to the information that best defines subsets (best predictor), leading to a label/classification (leaf node). For instance, in a dataset of people, to define if a person is a parent, one information with high information gain is "age" - if, say, under 12, that row falls to a subset that leads to NO KID, otherwise it belongs to another branch. After the first splitting is resolved, each is split again according to the second feature whit higher information gain. The tree can be split until no splitting is possible - there's no doubt about the outcome/classification -, a minimum level of certainty is reached or the maximum number of sequential decisions (pre-defined) is reached.
+
+In the Random Forests technique, after the individual predictions made by its Decision Tree take place, the method returns the class that is the mode of the classes outputs of those individual trees. In other words, each Decision Tree "votes" for a label, according to the rules they found, and then the votes are computed by the Forests, resulting in a label decided by the majority (using mode). By doing that, it avoids the overfitting tendency in individual Decision Tree.
+
+### Benchmark
+
+There's no benchmark model available but the actual rating of rescues per inspection exclusively using the traditional resource placing strategies. Therefore, we'll split the data in two equal parts: a subset for training and validating, that will be used as the benchmark model, and another to test the model.
+
+## III. Methodology
+
+### Data Preprocessing
 
 First of all, municipalities with no rescue will be removed from the dataset. As proposed, only those with actual rescue will be subject of the current study.
 
@@ -847,8 +870,6 @@ occupation_sample.head(10)
   </tbody>
 </table>
 </div>
-
-
 
 Occupations data is relevant in the context of tackling modern slavery. These data can be confronted with the joined information from CAGED (Cadastro Geral de Empregados e Desempregados) and census data, so that people can be receive instruction for jobs that are actually in demand or can be moved to loactions where there are job openings for the rescuee's desired occupation.
 
@@ -1677,11 +1698,11 @@ df_with_labels.head()
 </div>
 
 
+### Implementation
 
-## Classification - Random Forest
+As proposed, the dataset will be split in two: a 50% subset for training and validating the random forest (in a proportion of 80-20) and the other 50% will be used for testing.
 
-### Splitting the dataset
-
+#### Splitting the dataset
 
 ```python
 from sklearn.model_selection import train_test_split
@@ -1721,8 +1742,7 @@ print(y_test.shape)
     (377, 1)
 
 
-### Training the model
-
+#### Training the model
 
 ```python
 from sklearn.ensemble import RandomForestClassifier
@@ -1757,7 +1777,7 @@ plt.show()
 ![png](output_24_1.png) ![png](output_24_2.png)
 
 
-### Validating the model
+#### Validating the model
 
 
 ```python
@@ -1783,7 +1803,7 @@ plt.show()
 ![png](output_26_1.png) ![png](output_26_2.png)
 
 
-### Testing the model
+#### Testing the model
 
 
 ```python
@@ -1809,16 +1829,24 @@ plt.show()
 ![png](output_28_1.png) ![png](output_28_2.png)
 
 
-## Conclusion
+## IV. Results
+
+### Model Evaluation and Validation
+# TODO #
+
+### Justification
 
 As expected, the larger the balanced subset, the more accurate the cross-validated prediction. The testing subset, that held 50% of the data had the best metrics overall (except for the MEDIUM label).
 
 In the proposed real-world scenario, though, the accuracy can only be assessed by addressing resources to the flagged municipalities (labeled HIGH according to an expectation of maximizing rescues per inspection). It's very promising, nonetheless, to run such experimentations: in the normalized confusion matrix, for instance, we can see that 0.01 (2 occurences) of real HIGH were misclassified as LOW and 0.05 (7 instances) as MEDIUM, while 0.93 (125 municipalities) were correctly classified.
 
+## V. Conclusion
+
+### Free-Form Visualization
+
 If law enforcement should address the 150 municipalities classified as HIGH, we should expect the same 125 places (~83.33%) to be correctly classified, therefore generating more rescues per inspection. 5 of them (~3.33%) would represent a low rate of success, since the municipalities labeled as LOW are near-zero rescues per inspections, from the distribution used for labeling (from 0 to ~0.045). Similarly, we'd have 20 inspections (~13.33% of the 150 labeled as HIGH) with fewer rescues (from ~0.045 to ~0.139) according to the ratings and the confusion matrix. 
 
 We can also verify the actual feature importance for the accurate predictions, witch may enable us to avoid rhetorical disputes and focus on tackling the problem at hand.
-
 
 ```python
 # Display the most important features
@@ -1853,7 +1881,10 @@ plt.show()
 
 Since the dataset used is closely related to inspections and rescues, it tends to a reinforced bias (the number of rescues - te_rgt -, for instance, is obviously extremely relevant to the classification. Some relevant features can bee seen, such as the ammount Male slaves rescued (te_res_sexo - Masculino), the low instruction level (te_res_instrucao and te_nat_instrucao - 5th and 6th to 9th year of formal education). Some issues show up also, such as the race not informed in the reports (te_nat_raca and te_res_raca) being among the most relevant features.
 
-### Future work
+### Reflection
+# TODO #
+
+### Improvement
 
 Since the results of this study is expected to be included in the Observatório Digital do Trabalho Escravo, the model will be built using the full inspections dataset. Then, it will be applied for labeling municipalities with no inspection record. In order for that to work, we must revisit the raw datasets from IBGE and the check if the high sparsity persists and, if so, how to address this issue.
 

@@ -1,0 +1,8 @@
+Bibliotecas importadas: pandas, re, numpy, matplotlib, scikit-learn, scikit-plot e seaborn.
+
+Disretórios:
+data - datasets baixados conforme descrito no report.
+report - imagens, markdown e report em html e pdf.
+
+Código:
+Desenvolvido usando notebook (report.ipynb)
